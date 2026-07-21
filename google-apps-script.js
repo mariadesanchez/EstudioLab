@@ -890,10 +890,13 @@ function doPost(e) {
     result = { status: "error", message: err.toString() };
   }
 
-  try {
-    updateFichasClientesSheet(ss);
-  } catch (syncErr) {
-    Logger.log("Error al sincronizar fichas_clientes: " + syncErr.message);
+  // Solo actualizar fichas_clientes si se creó un cliente o cambió un estado para máxima velocidad
+  if (data.action === "create_client_sheet" || data.action === "toggle_client_status") {
+    try {
+      updateFichasClientesSheet(ss);
+    } catch (syncErr) {
+      Logger.log("Error al sincronizar fichas_clientes: " + syncErr.message);
+    }
   }
   
   return ContentService.createTextOutput(JSON.stringify(result))
@@ -983,4 +986,56 @@ function cleanAutocopia() {
   }
   
   Logger.log("Limpieza completada. Hilos eliminados: " + deletedCount);
+}
+
+/**
+ * SINCRONIZACIÓN AUTOMÁTICA DE CORREOS RECIBIDOS (Alternativa Nativa a N8N)
+ * Busca los últimos correos recibidos en Gmail y los agrega a la pestaña 'received_emails'.
+ * Puedes agregar un activador por tiempo en Apps Script (ej: cada 5 o 10 min) para ejecutar esta función.
+ */
+function sincronizarCorreosRecibidos() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var recSheet = ss.getSheetByName("received_emails");
+  if (!recSheet) {
+    recSheet = ss.insertSheet("received_emails");
+    recSheet.appendRow(["ID", "Fecha", "De", "Email", "Asunto"]);
+  }
+
+  var existingIds = {};
+  var lastRow = recSheet.getLastRow();
+  if (lastRow > 1) {
+    var ids = recSheet.getRange(2, 1, lastRow - 1, 1).getValues();
+    for (var i = 0; i < ids.length; i++) {
+      existingIds[String(ids[i][0])] = true;
+    }
+  }
+
+  var threads = GmailApp.getInboxThreads(0, 25);
+  var newCount = 0;
+
+  for (var t = 0; t < threads.length; t++) {
+    var messages = threads[t].getMessages();
+    for (var m = 0; m < messages.length; m++) {
+      var msg = messages[m];
+      var msgId = msg.getId();
+
+      if (!existingIds[msgId]) {
+        var from = msg.getFrom();
+        var emailMatch = from.match(/<([^>]+)>/);
+        var email = emailMatch ? emailMatch[1] : from;
+        var name = from.replace(/<[^>]+>/, "").replace(/"/g, "").trim();
+
+        recSheet.appendRow([
+          msgId,
+          msg.getDate().toISOString(),
+          name || email,
+          email,
+          msg.getSubject() || "(Sin Asunto)"
+        ]);
+        existingIds[msgId] = true;
+        newCount++;
+      }
+    }
+  }
+  Logger.log("Sincronizados " + newCount + " correos recibidos nuevos directamente desde Gmail.");
 }

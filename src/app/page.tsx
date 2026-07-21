@@ -802,6 +802,16 @@ export default function Home() {
         const created = resData.created || [];
         const alreadyExisting = resData.alreadyExisting || [];
 
+        // Optimistic UI update para que las fichas recién creadas activen su switch en < 10ms
+        setClientSheets((prev) => {
+          const updated = { ...prev };
+          listToCreate.forEach((c) => {
+            const name = `${c.Nombre || ''} ${c.Apellido || ''}`.trim() || c.email;
+            if (name) updated[name] = { exists: true, status: 'Activo' };
+          });
+          return updated;
+        });
+
         if (!isCustomArray && (created.length > 0 || alreadyExisting.length > 0)) {
           setClientCreationResultModal({ created, alreadyExisting });
         }
