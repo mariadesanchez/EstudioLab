@@ -428,8 +428,8 @@ function getClientSheetDetails(clientName, emailAddress) {
     status: "success",
     sheetName: sheet.getName(),
     clientInfo: clientInfo,
-    notes: notes,
-    emails: emails
+    notes: notes.reverse(),
+    emails: emails.reverse()
   };
 }
 

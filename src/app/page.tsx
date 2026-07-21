@@ -901,8 +901,8 @@ export default function Home() {
       }));
 
       setContacts(normalizedContacts);
-      setSentEmails(normalizedSent);
-      setReceivedEmails(normalizedReceived);
+      setSentEmails(normalizedSent.reverse());
+      setReceivedEmails(normalizedReceived.reverse());
     } catch (err: any) {
       console.error(err);
       setError(err.message || 'No se pudo conectar con el servidor o Google Sheets.');
