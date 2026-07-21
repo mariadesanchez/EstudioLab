@@ -5,7 +5,7 @@ import {
   Mail, Send, Inbox, Users, Search, Calendar, 
   RefreshCw, Copy, Check, ExternalLink, Filter, Eye, 
   ChevronRight, AlertCircle, Sparkles, X, UserPlus, User, Scale, Paperclip, FileText,
-  Pencil, Trash2, Plus, Save, Mic, MicOff, Square, Loader2
+  Pencil, Trash2, Plus, Save, Mic, MicOff, Square, Loader2, Menu
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Contact, SentEmail, ReceivedEmail } from '../types';
@@ -15,6 +15,7 @@ type DateFilterType = 'all' | 'today' | 'yesterday' | 'last7' | 'custom';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [sentEmails, setSentEmails] = useState<SentEmail[]>([]);
   const [receivedEmails, setReceivedEmails] = useState<ReceivedEmail[]>([]);
@@ -1197,8 +1198,8 @@ export default function Home() {
 
   return (
     <div className="flex h-screen w-full bg-[#f8fafc] text-zinc-800 overflow-hidden font-sans">
-      {/* 1. Left Sidebar */}
-      <aside className="w-64 bg-white border-r border-zinc-200/80 flex flex-col justify-between p-6 shrink-0 shadow-sm">
+      {/* 1. Left Sidebar (Desktop) */}
+      <aside className="w-64 bg-white border-r border-zinc-200/80 hidden md:flex flex-col justify-between p-6 shrink-0 shadow-sm">
         <div className="space-y-6">
 
           {/* Navigation Menu */}
@@ -1287,26 +1288,116 @@ export default function Home() {
         </div>
       </aside>
 
+      {/* Mobile Drawer Navigation Menu */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 md:hidden animate-fadeIn flex">
+          <div className="w-72 bg-white h-full p-6 flex flex-col justify-between shadow-2xl animate-slideRight">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between border-b border-zinc-100 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center text-white shadow-md">
+                    <Scale className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="font-black text-lg text-zinc-900 block leading-tight">EstudioLab</span>
+                    <span className="text-[10px] text-zinc-500 font-bold">Estudio Jurídico</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="p-2 text-zinc-500 hover:bg-zinc-100 rounded-full cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <nav className="space-y-1.5">
+                <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-3 mb-2">Panel Principal</p>
+                <button
+                  onClick={() => { setActiveTab('dashboard'); setSearchQuery(''); setSubjectQuery(''); setDateFilter('all'); setSelectedContacts(new Set()); setIsMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold transition-all ${
+                    activeTab === 'dashboard' ? 'bg-[#c2e7ff] text-[#001d35]' : 'text-zinc-700 hover:bg-zinc-100'
+                  }`}
+                >
+                  <Sparkles className="w-4 h-4" />
+                  Vista General
+                </button>
+                <button
+                  onClick={() => { setActiveTab('sent'); setSearchQuery(''); setSubjectQuery(''); setDateFilter('all'); setSelectedContacts(new Set()); setIsMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold transition-all ${
+                    activeTab === 'sent' ? 'bg-[#c2e7ff] text-[#001d35]' : 'text-zinc-700 hover:bg-zinc-100'
+                  }`}
+                >
+                  <Send className="w-4 h-4" />
+                  Enviados ({sentEmails.length})
+                </button>
+                <button
+                  onClick={() => { setActiveTab('received'); setSearchQuery(''); setSubjectQuery(''); setDateFilter('all'); setSelectedContacts(new Set()); setIsMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold transition-all ${
+                    activeTab === 'received' ? 'bg-[#c2e7ff] text-[#001d35]' : 'text-zinc-700 hover:bg-zinc-100'
+                  }`}
+                >
+                  <Inbox className="w-4 h-4" />
+                  Recibidos ({receivedEmails.length})
+                </button>
+                <button
+                  onClick={() => { setActiveTab('contacts'); setSearchQuery(''); setSubjectQuery(''); setDateFilter('all'); setSelectedContacts(new Set()); setIsMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold transition-all ${
+                    activeTab === 'contacts' ? 'bg-[#c2e7ff] text-[#001d35]' : 'text-zinc-700 hover:bg-zinc-100'
+                  }`}
+                >
+                  <Users className="w-4 h-4" />
+                  Directorio de Contactos
+                </button>
+              </nav>
+            </div>
+
+            <div className="pt-4 border-t border-zinc-200/80 space-y-3">
+              <button
+                onClick={() => { fetchData(); setIsMobileMenuOpen(false); }}
+                disabled={loading}
+                className="w-full flex items-center justify-center gap-2 bg-purple-50 text-purple-700 border border-purple-200 py-3 rounded-xl text-xs font-bold transition-all cursor-pointer"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+                Actualizar datos
+              </button>
+            </div>
+          </div>
+          <div className="flex-1" onClick={() => setIsMobileMenuOpen(false)}></div>
+        </div>
+      )}
+
       {/* 2. Main Content Container */}
       <main className="flex-1 flex flex-col h-full bg-[#f8fafc] overflow-hidden relative">
         {/* Header */}
-        <header className="h-24 border-b border-zinc-200/80 flex items-center justify-center px-8 shrink-0 bg-[#f6f8fc] z-10 relative">
-          {/* Logo and Brand Centered Horizontally */}
-          <div className="flex items-center gap-5 hover:scale-105 transition-all duration-300 cursor-pointer">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-purple-600 via-violet-500 to-indigo-500 flex items-center justify-center text-white shadow-xl shadow-purple-500/25 shrink-0 border-2 border-white ring-4 ring-purple-100">
-              <Scale className="w-9 h-9 text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.15)]" />
+        <header className="h-16 md:h-24 border-b border-zinc-200/80 flex items-center justify-between md:justify-center px-4 md:px-8 shrink-0 bg-[#f6f8fc] z-10 relative">
+          {/* Mobile Hamburger Button */}
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="p-2 text-zinc-700 hover:bg-zinc-200/60 rounded-xl md:hidden cursor-pointer shrink-0"
+            title="Abrir menú"
+          >
+            <Menu className="w-6 h-6" />
+          </button>
+
+          {/* Logo and Brand */}
+          <div className="flex items-center gap-3 md:gap-5 hover:scale-105 transition-all duration-300 cursor-pointer">
+            <div className="w-10 h-10 md:w-16 md:h-16 rounded-full bg-gradient-to-tr from-purple-600 via-violet-500 to-indigo-500 flex items-center justify-center text-white shadow-xl shadow-purple-500/25 shrink-0 border-2 border-white ring-2 md:ring-4 ring-purple-100">
+              <Scale className="w-5 h-5 md:w-9 md:h-9 text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.15)]" />
             </div>
             <div className="text-left flex flex-col justify-center">
-              <span className="font-black text-2xl text-zinc-900 tracking-tight block leading-none">
+              <span className="font-black text-lg md:text-2xl text-zinc-900 tracking-tight block leading-none">
                 Estudio<span className="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent font-black">Lab</span>
               </span>
-              <div className="text-base text-zinc-800 font-extrabold tracking-tight mt-1.5 leading-tight block">
+              <div className="text-[11px] md:text-base text-zinc-800 font-extrabold tracking-tight mt-0.5 md:mt-1.5 leading-tight hidden sm:block">
                 Doc. Rosario Sánchez &nbsp;•&nbsp; Doc. Federico Fernandez Sánchez
               </div>
             </div>
           </div>
           
-          <div className="absolute right-8 flex items-center gap-3">
+          <div className="hidden sm:flex md:absolute md:right-8 items-center gap-3">
             <span className="text-xs bg-white text-zinc-700 border border-zinc-200/80 py-1.5 px-3.5 rounded-full font-semibold shadow-sm">
               Hoy es: {new Date().toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
             </span>
@@ -2651,41 +2742,41 @@ export default function Home() {
 
       {/* MODAL: FICHA COMPLETA DE CLIENTE */}
       {isClientDetailsModalOpen && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fadeIn">
-          <div className="bg-white text-zinc-900 rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-zinc-100 overflow-hidden animate-scaleUp">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 z-50 animate-fadeIn">
+          <div className="bg-white text-zinc-900 rounded-2xl sm:rounded-3xl max-w-2xl w-full max-h-[94vh] sm:max-h-[90vh] flex flex-col shadow-2xl border border-zinc-100 overflow-hidden animate-scaleUp">
             
             {/* Header / Banner Morado */}
-            <div className="bg-gradient-to-r from-purple-800 via-purple-700 to-indigo-800 p-6 sm:p-7 text-white relative">
+            <div className="bg-gradient-to-r from-purple-800 via-purple-700 to-indigo-800 p-4 sm:p-7 text-white relative">
               <button
                 type="button"
                 onClick={() => setIsClientDetailsModalOpen(false)}
-                className="absolute top-4 right-4 text-white/80 hover:text-white hover:bg-white/20 p-2 rounded-full transition-colors cursor-pointer"
+                className="absolute top-3 right-3 sm:top-4 sm:right-4 text-white/80 hover:text-white hover:bg-white/20 p-2 rounded-full transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
 
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/40 shrink-0 shadow-lg">
-                  <User className="w-7 h-7 text-white" />
+              <div className="flex items-center gap-3 sm:gap-4 pr-6">
+                <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/40 shrink-0 shadow-lg">
+                  <User className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
                 </div>
                 <div>
-                  <div className="flex flex-wrap items-center gap-2.5">
-                    <h2 style={{ color: '#ffffff' }} className="!text-white text-2xl font-black tracking-tight drop-shadow-md">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h2 style={{ color: '#ffffff' }} className="!text-white text-lg sm:text-2xl font-black tracking-tight drop-shadow-md">
                       {clientDetailsData?.clientInfo.Nombre} {clientDetailsData?.clientInfo.Apellido}
                     </h2>
                     {clientDetailsData?.clientInfo.Estado === 'Activo' && (
-                      <span style={{ color: '#a7f3d0' }} className="text-[10px] font-black bg-emerald-500/30 !text-emerald-200 border border-emerald-400/40 px-3 py-0.5 rounded-full uppercase tracking-wider">
+                      <span style={{ color: '#a7f3d0' }} className="text-[10px] font-black bg-emerald-500/30 !text-emerald-200 border border-emerald-400/40 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                         Activo
                       </span>
                     )}
                     {clientDetailsData?.clientInfo.Estado === 'Inactivo' && (
-                      <span style={{ color: '#e4e4e7' }} className="text-[10px] font-black bg-zinc-500/30 !text-zinc-200 border border-zinc-400/40 px-3 py-0.5 rounded-full uppercase tracking-wider">
+                      <span style={{ color: '#e4e4e7' }} className="text-[10px] font-black bg-zinc-500/30 !text-zinc-200 border border-zinc-400/40 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                         Inactivo
                       </span>
                     )}
                   </div>
-                  <p style={{ color: '#ffffff' }} className="!text-white text-xs font-bold flex items-center gap-1.5 mt-1 opacity-90">
-                    <Mail className="w-3.5 h-3.5 text-white" />
+                  <p style={{ color: '#ffffff' }} className="!text-white text-xs font-bold flex items-center gap-1.5 mt-0.5 sm:mt-1 opacity-90 truncate max-w-[240px] sm:max-w-none">
+                    <Mail className="w-3.5 h-3.5 text-white shrink-0" />
                     {clientDetailsData?.clientInfo.Email || 'Sin email'}
                   </p>
                 </div>
@@ -2693,7 +2784,7 @@ export default function Home() {
             </div>
 
             {/* Content Body */}
-            <div className="p-6 overflow-y-auto space-y-6 flex-1 text-xs">
+            <div className="p-4 sm:p-6 overflow-y-auto space-y-5 flex-1 text-xs">
               {isLoadingClientDetails ? (
                 <div className="py-16 text-center space-y-3">
                   <div className="w-8 h-8 rounded-full border-3 border-purple-600 border-t-transparent animate-spin mx-auto"></div>
