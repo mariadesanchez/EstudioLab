@@ -1,0 +1,317 @@
+{
+  "name": "Instagram Follower Analyzer & Google Sheets Sync (Diario)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "daysOfWeek": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+              ],
+              "timeHour": 9
+            }
+          ]
+        }
+      },
+      "id": "e8d6f510-9c24-4f24-be5f-1ffdf5c4c23c",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -200,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "list",
+        "limit": 1,
+        "options": {
+          "filter": "name contains 'following' and name contains '.json' and trashed = false and '11maehJk4yCfqTGvjGbf03toF62bsVZW3' in parents",
+          "orderBy": "modifiedTime desc"
+        }
+      },
+      "id": "f8a0e0b3-1fcf-49b4-b9fa-f7f1ad4b21d3",
+      "name": "Buscar following",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        20,
+        120
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "BpUt3nC1skgSVvkw",
+          "name": "New Credential agentesailucky@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": "={{ $json.id }}",
+        "options": {
+          "binaryPropertyName": "following_file"
+        }
+      },
+      "id": "bc036702-7a1c-4725-aa33-5574275f6e44",
+      "name": "Descargar following",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        240,
+        120
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "BpUt3nC1skgSVvkw",
+          "name": "New Credential agentesailucky@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "list",
+        "limit": 1,
+        "options": {
+          "filter": "name contains 'followers' and name contains '.json' and trashed = false and '11maehJk4yCfqTGvjGbf03toF62bsVZW3' in parents",
+          "orderBy": "modifiedTime desc"
+        }
+      },
+      "id": "0e744818-a425-4890-9f97-9634de61d74b",
+      "name": "Buscar followers",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        460,
+        120
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "BpUt3nC1skgSVvkw",
+          "name": "New Credential agentesailucky@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": "={{ $json.id }}",
+        "options": {
+          "binaryPropertyName": "followers_file"
+        }
+      },
+      "id": "ba5d0a36-c3a3-4a16-8f5c-9c6d60f66eb3",
+      "name": "Descargar followers",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        680,
+        120
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "BpUt3nC1skgSVvkw",
+          "name": "New Credential agentesailucky@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Obtener binario de following\nconst followingBinary = $('Descargar following').item.binary?.following_file;\nif (!followingBinary) throw new Error('No se descargó el archivo de seguidos (following)');\nconst followingText = Buffer.from(followingBinary.data, 'base64').toString('utf8');\nconst followingJson = JSON.parse(followingText);\n\n// 2. Obtener binario de followers\nconst followersBinary = $('Descargar followers').item.binary?.followers_file;\nif (!followersBinary) throw new Error('No se descargó el archivo de seguidores (followers)');\nconst followersText = Buffer.from(followersBinary.data, 'base64').toString('utf8');\nconst followersJson = JSON.parse(followersText);\n\n// 3. Extraer listas limpias\nlet followingList = followingJson.relationships_following ?? (Array.isArray(followingJson) ? followingJson : []);\nlet followersList = followersJson.relationships_followers ?? (Array.isArray(followersJson) ? followersJson : []);\n\nconst mapUser = (item) => item.string_list_data?.[0]?.value ?? item.title ?? '';\n\nconst seguidosClean = followingList.map(mapUser).filter(u => u !== '').sort((a, b) => a.localeCompare(b));\nconst seguidoresClean = followersList.map(mapUser).filter(u => u !== '').sort((a, b) => a.localeCompare(b));\n\n// 4. Combinar por fila (Alineación de columnas)\nconst maxRows = Math.max(seguidosClean.length, seguidoresClean.length);\nconst results = [];\n\nfor (let i = 0; i < maxRows; i++) {\n  results.push({\n    json: {\n      seguidores: seguidoresClean[i] ?? \"\",\n      seguidos: seguidosClean[i] ?? \"\"\n    }\n  });\n}\n\nreturn results;"
+      },
+      "id": "12c2ab73-ab19-4d8d-b46d-af203f735bff",
+      "name": "Procesar Ambos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "clear",
+        "documentId": {
+          "__rl": true,
+          "value": "14NxdP--uNGQgD5G-QwvXlovkEvFa4L19O2CaDkrklCs",
+          "mode": "list",
+          "cachedResultName": "Instagram"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "seguidores-seguidos"
+        },
+        "clear": "specificRange",
+        "range": "A2:B10000"
+      },
+      "id": "d46c2629-0501-414d-9e9f-df4d9a8ff12b",
+      "name": "Clear Old Rows",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1120,
+        120
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "y3OiWMyU2FRFhh48",
+          "name": "InstaLens agentesailucky@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "14NxdP--uNGQgD5G-QwvXlovkEvFa4L19O2CaDkrklCs",
+          "mode": "list",
+          "cachedResultName": "Instagram"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "seguidores-seguidos"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "seguidores",
+              "displayName": "seguidores",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "seguidos",
+              "displayName": "seguidos",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "289c016a-c321-455d-a39d-29e15b445d07",
+      "name": "Write New Data",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1340,
+        120
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "y3OiWMyU2FRFhh48",
+          "name": "InstaLens agentesailucky@gmail.com"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Buscar following",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar following": {
+      "main": [
+        [
+          {
+            "node": "Descargar following",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Descargar following": {
+      "main": [
+        [
+          {
+            "node": "Buscar followers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar followers": {
+      "main": [
+        [
+          {
+            "node": "Descargar followers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Descargar followers": {
+      "main": [
+        [
+          {
+            "node": "Procesar Ambos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Procesar Ambos": {
+      "main": [
+        [
+          {
+            "node": "Clear Old Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clear Old Rows": {
+      "main": [
+        [
+          {
+            "node": "Write New Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a75b9f7e21fca33aff5bd61e0a8d72316ecfe05b86dfeed77b62d1e2e3084ff9"
+  }
+}

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InstaLens - Selector de Cuentas a Seguir</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0c10;
+      --surface: #1f2833;
+      --accent: #45f3ff;
+      --text: #c5c6c7;
+      --text-bright: #ffffff;
+      --border: rgba(69, 243, 255, 0.15);
+      --success: #00ff88;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--text-bright);
+      background: linear-gradient(45deg, var(--text-bright), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      background: rgba(31, 40, 51, 0.45);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    textarea {
+      width: 100%;
+      height: 120px;
+      background-color: rgba(11, 12, 16, 0.8);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--accent);
+      font-family: monospace;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #1f2833, #0b0c10);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 0.8rem 1.8rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      text-align: center;
+    }
+
+    .btn:hover {
+      background: var(--accent);
+      color: var(--bg);
+      box-shadow: 0 0 15px rgba(69, 243, 255, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .btn-auto {
+      background: linear-gradient(135deg, var(--accent), #00d2ff);
+      color: var(--bg);
+      border: none;
+      margin-left: 1rem;
+    }
+
+    .btn-auto:hover {
+      box-shadow: 0 0 20px rgba(69, 243, 255, 0.6);
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .stats {
+      font-size: 0.95rem;
+      color: var(--text-bright);
+    }
+
+    .stats span {
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    .list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .card {
+      background: rgba(11, 12, 16, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      border-color: rgba(69, 243, 255, 0.3);
+      transform: scale(1.01);
+    }
+
+    .card.visited {
+      border-color: rgba(0, 255, 136, 0.2);
+      opacity: 0.6;
+    }
+
+    .card-info {
+      flex: 1;
+      margin-right: 1rem;
+    }
+
+    .card-title-row {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .card-user {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-bright);
+    }
+
+    .card-tag {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--bg);
+      background-color: var(--accent);
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .card-desc {
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .visited-indicator {
+      display: none;
+      color: var(--success);
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+
+    .card.visited .visited-indicator {
+      display: block;
+    }
+
+    .card.visited .btn-open {
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    .card.visited .btn-open:hover {
+      background-color: var(--success);
+      color: var(--bg);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>InstaLens Recommendations</h1>
+    <p>Pegá el JSON de n8n para explorar y seguir cuentas de forma ágil</p>
+  </header>
+
+  <div class="container">
+    <textarea id="jsonInput" placeholder='Pegá aquí la lista JSON de recomendaciones de n8n...'></textarea>
+    
+    <div class="controls">
+      <button class="btn" onclick="loadJSON()">Cargar Cuentas</button>
+      <div id="stats" class="stats" style="display: none;">
+        Cargadas: <span id="totalCount">0</span> | Visitadas: <span id="visitedCount">0</span>
+        <button class="btn btn-auto" onclick="openNext()">Abrir Siguiente</button>
+      </div>
+    </div>
+
+    <div id="list" class="list"></div>
+  </div>
+
+  <script>
+    let items = [];
+    let visited = new Set();
+
+    function loadJSON() {
+      const val = document.getElementById('jsonInput').value.trim();
+      if (!val) return;
+      try {
+        // Soporta tanto el array directo como la propiedad 'recomendaciones'
+        const parsed = JSON.parse(val);
+        items = parsed.recomendaciones || parsed;
+        if (!Array.isArray(items)) {
+          alert('El formato JSON no es un array válido.');
+          return;
+        }
+        
+        visited.clear();
+        renderList();
+        document.getElementById('stats').style.display = 'flex';
+        updateStats();
+      } catch(e) {
+        alert('Error al parsear el JSON. Asegúrate de copiarlo completo.');
+      }
+    }
+
+    function renderList() {
+      const container = document.getElementById('list');
+      container.innerHTML = '';
+      
+      items.forEach((item, index) => {
+        const usernameClean = item.cuenta.replace('@', '');
+        const url = `https://www.instagram.com/${usernameClean}`;
+        
+        const card = document.createElement('div');
+        card.className = `card ${visited.has(index) ? 'visited' : ''}`;
+        card.id = `card-${index}`;
+        
+        card.innerHTML = `
+          <div class="card-info">
+            <div class="card-title-row">
+              <span class="card-user">${item.cuenta}</span>
+              <span class="card-tag">${item.categoria.replace('_', ' ')}</span>
+            </div>
+            <p class="card-desc">${item.descripcion}</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <span class="visited-indicator">✓ Visto</span>
+            <a href="${url}" target="_blank" class="btn btn-open" onclick="markVisited(${index})">Abrir Perfil</a>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function markVisited(index) {
+      visited.add(index);
+      const card = document.getElementById(`card-${index}`);
+      if (card) {
+        card.classList.add('visited');
+        // Buscar el indicador y mostrarlo
+        const indicator = card.querySelector('.visited-indicator');
+        if (indicator) indicator.style.display = 'block';
+      }
+      updateStats();
+    }
+
+    function updateStats() {
+      document.getElementById('totalCount').innerText = items.length;
+      document.getElementById('visitedCount').innerText = visited.size;
+    }
+
+    function openNext() {
+      // Busca el primer índice no visitado
+      const nextIndex = items.findIndex((_, index) => !visited.has(index));
+      if (nextIndex === -1) {
+        alert('¡Ya revisaste todas las recomendaciones! 🎉');
+        return;
+      }
+      
+      const item = items[nextIndex];
+      const usernameClean = item.cuenta.replace('@', '');
+      const url = `https://www.instagram.com/${usernameClean}`;
+      
+      // Abrir en pestaña nueva
+      window.open(url, '_blank');
+      // Marcar como visto
+      markVisited(nextIndex);
+      
+      // Hace scroll suave hasta la tarjeta actual
+      document.getElementById(`card-${nextIndex}`).scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f6f8fc;
+  --foreground: #1f1f1f;
+  --card-bg: #ffffff;
+  --card-border: #e0e2e6;
+  --accent-primary: #0b57d0;
+  --accent-secondary: #c2e7ff;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  background-image: none;
+  min-height: 100vh;
+}
+
+/* Glassmorphism styling */
+.glass-panel {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(15, 23, 42, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.65);
+  border-color: rgba(15, 23, 42, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.05);
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.01);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* ==========================================================================
+   LIGHT MODE STYLING OVERRIDES (EstudioLab - Gmail Theme)
+   ========================================================================== */
+.light {
+  background-color: #f6f8fc;
+  color: #1f1f1f;
+
+
+
+  .text-zinc-900, .text-zinc-800, .text-slate-900, .text-slate-800 {
+    color: #1f1f1f !important;
+  }
+
+  /* Contraste moderado y legible para textos secundarios */
+  .text-zinc-300, .text-zinc-400, .text-zinc-500, .text-slate-500, .text-zinc-600 {
+    color: #3c4043 !important; /* Gris oscuro moderado de Google */
+  }
+
+  /* Aumentar tamaño de letras globalmente pero con grosor moderado */
+  .text-xs {
+    font-size: 13.5px !important;
+  }
+
+  .text-sm {
+    font-size: 15.5px !important;
+  }
+
+  .text-base {
+    font-size: 17.5px !important;
+  }
+
+  .text-3xl {
+    font-size: 34px !important;
+    font-weight: 700 !important;
+    color: #1f1f1f !important;
+  }
+
+  h1, h2, h3, h4 {
+    font-weight: 700;
+  }
+
+  .font-medium {
+    font-weight: 550 !important;
+  }
+
+  /* Botones y enlaces con resalte moderado */
+  button, a {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+  }
+
+  /* Píldora activa del menú lateral en contraste azul de Gmail */
+  .bg-\[\#c2e7ff\] {
+    background-color: #c2e7ff !important; /* Celeste Gmail */
+    color: #001d35 !important; /* Azul marino */
+    font-weight: 700 !important;
+  }
+
+  .bg-\[\#c2e7ff\] * {
+    color: #001d35 !important;
+  }
+
+  /* Elementos interactivos (Inputs / Textareas) - Bordes más finos y limpios */
+  input, textarea, select {
+    background-color: #ffffff !important;
+    border: 1.5px solid #bdc1c6 !important; /* Borde más fino */
+    color: #1f1f1f !important;
+    font-size: 15px !important;
+    font-weight: 500 !important;
+    border-radius: 8px !important;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: #80868b !important;
+    font-weight: 400 !important;
+  }
+
+  /* Agrandar Checkboxes moderadamente */
+  input[type="checkbox"] {
+    width: 18px !important;
+    height: 18px !important;
+    border: 1.5px solid #5f6368 !important;
+    cursor: pointer !important;
+  }
+
+  /* Tarjetas y paneles - Sin rebordes excesivos */
+  .glass-panel {
+    background: #ffffff !important;
+    border: 1px solid #e0e2e6 !important; /* Bordes suaves de 1px */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+  }
+
+  /* Contenedores secundarios */
+  .bg-zinc-900\/40, .bg-zinc-950\/40, .bg-zinc-900\/60, .bg-zinc-950\/60 {
+    background-color: #ffffff !important;
+    border: 1px solid #e0e2e6 !important;
+  }
+
+  .hover\:bg-zinc-900\/20:hover {
+    background-color: #f1f3f4 !important;
+  }
+
+  .bg-zinc-900, .bg-zinc-950 {
+    background-color: #ffffff !important;
+    border-color: #e0e2e6 !important;
+    color: #1f1f1f !important;
+  }
+
+  /* Bordes de tablas y listas delgados */
+  .border-zinc-200, .border-zinc-800, .border-zinc-900, .border-white\/5 {
+    border-color: #e2e8f0 !important;
+    border-width: 1px !important;
+  }
+
+  /* Borde de contenedor tipo Gmail */
+  .border-\[\#e0e2e6\] {
+    border: 1px solid #e0e2e6 !important;
+  }
+
+  /* Bloque de código de instalación */
+  pre, pre * {
+    background-color: #f1f3f4 !important;
+    border-color: #e0e2e6 !important;
+    color: #3c4043 !important;
+    font-size: 12.5px !important;
+  }
+
+  /* Barra inferior flotante de acciones */
+  .fixed.bottom-6 {
+    background-color: #ffffff !important;
+    border: 1.5px solid #e0e2e6 !important;
+    color: #1f1f1f !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+  }
+
+  .fixed.bottom-6 .text-zinc-500 {
+    color: #5f6368 !important;
+  }
+
+  /* Pantalla de carga */
+  .bg-\[\#09090b\]\/80 {
+    background-color: rgba(246, 248, 252, 0.9) !important;
+  }
+
+  /* Etiquetas de estado */
+  span.text-\[10px\], span.text-xs {
+    font-size: 13px !important;
+  }
+
+  /* Ajustes de hover generales */
+  .hover\:text-white:hover {
+    color: #1f1f1f !important;
+  }
+
+  .hover\:bg-zinc-900\/60:hover {
+    background-color: #e8eaed !important;
+  }
+}
