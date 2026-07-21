@@ -25,3 +25,32 @@ Finished building workflow dependency index. Processed 0 draft workflows, 0 publ
 Pruning old insights data
 Pruning old insights data
 Pruning old insights data
+getaddrinfo ENOTFOUND api.n8n.io
+Error: getaddrinfo ENOTFOUND api.n8n.io
+    at AxiosError.from (/Users/lucky/.npm/_npx/a8a7eec953f1f314/node_modules/@n8n/backend-network/node_modules/axios/dist/node/axios.cjs:1355:24)
+    at RedirectableRequest.handleRequestError (/Users/lucky/.npm/_npx/a8a7eec953f1f314/node_modules/@n8n/backend-network/node_modules/axios/dist/node/axios.cjs:4026:25)
+    at RedirectableRequest.emit (node:events:520:22)
+    at ClientRequest.eventHandlers.<computed> (/Users/lucky/.npm/_npx/a8a7eec953f1f314/node_modules/follow-redirects/index.js:56:24)
+    at ClientRequest.emit (node:events:508:20)
+    at emitErrorEvent (node:_http_client:108:11)
+    at TLSSocket.socketErrorListener (node:_http_client:575:5)
+    at TLSSocket.emit (node:events:520:22)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at Axios.request (/Users/lucky/.npm/_npx/a8a7eec953f1f314/node_modules/@n8n/backend-network/node_modules/axios/dist/node/axios.cjs:5427:41)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at invokeAxios (/Users/lucky/.npm/_npx/a8a7eec953f1f314/node_modules/@n8n/backend-network/src/http/axios/invoke.ts:15:10)
+    at httpRequest (/Users/lucky/.npm/_npx/a8a7eec953f1f314/node_modules/@n8n/backend-network/src/http/axios/request.ts:211:5)
+    at Object.request (/Users/lucky/.npm/_npx/a8a7eec953f1f314/node_modules/@n8n/backend-network/src/http/outbound-http.ts:188:12)
+    at paginatedRequest (/Users/lucky/.npm/_npx/a8a7eec953f1f314/node_modules/n8n/src/utils/strapi-utils.ts:87:15)
+    at McpRegistryApiClient.fetchServersMetadata (/Users/lucky/.npm/_npx/a8a7eec953f1f314/node_modules/n8n/src/modules/mcp-registry/registry/mcp-registry-api.client.ts:31:10)
+    at McpRegistryService.refreshUpdatedServers (/Users/lucky/.npm/_npx/a8a7eec953f1f314/node_modules/n8n/src/modules/mcp-registry/registry/mcp-registry.service.ts:174:20)
+    at McpRegistryService.refreshFromApiInternal (/Users/lucky/.npm/_npx/a8a7eec953f1f314/node_modules/n8n/src/modules/mcp-registry/registry/mcp-registry.service.ts:147:20)
+    at McpRegistryService.refreshFromApi (/Users/lucky/.npm/_npx/a8a7eec953f1f314/node_modules/n8n/src/modules/mcp-registry/registry/mcp-registry.service.ts:134:4)
+
+getaddrinfo ENOTFOUND api.n8n.io
+Error: getaddrinfo ENOTFOUND api.n8n.io
+    at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:110:26)
+
+Error fetching from Strapi API (https://api.n8n.io/api/mcp-servers): getaddrinfo ENOTFOUND api.n8n.io
+Failed to refresh MCP registry

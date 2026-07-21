@@ -768,7 +768,18 @@ function doPost(e) {
         }
 
         // Enviar el correo directamente (con o sin adjuntos) y obtener el ID real de Gmail y del Hilo
-        var recipientFormatted = fullName ? ("\"" + fullName + "\" <" + emailAddress + ">") : emailAddress;
+        // Sanitizar nombre: quitar tildes/acentos/ñ para evitar error "Invalid To header"
+        var safeName = (fullName || "")
+          .replace(/[áàäâ]/gi, "a")
+          .replace(/[éèëê]/gi, "e")
+          .replace(/[íìïî]/gi, "i")
+          .replace(/[óòöô]/gi, "o")
+          .replace(/[úùüû]/gi, "u")
+          .replace(/ñ/gi, "n")
+          .replace(/ç/gi, "c")
+          .replace(/[^a-zA-Z0-9 ._\-]/g, "")
+          .trim();
+        var recipientFormatted = safeName ? ("\"" + safeName + "\" <" + emailAddress + ">") : emailAddress;
         var draft = GmailApp.createDraft(recipientFormatted, subject, body, draftOptions);
         var sentMessage = draft.send();
         
