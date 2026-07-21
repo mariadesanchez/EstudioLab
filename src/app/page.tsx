@@ -1840,7 +1840,7 @@ export default function Home() {
                       {/* Top Action Bar */}
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-zinc-100">
                         {/* Left action group: Create contact & Select All checkbox */}
-                        <div className="flex items-center gap-4">
+                        <div className="flex flex-wrap items-center gap-3">
                           <button
                             onClick={() => setIsCreateModalOpen(true)}
                             className="inline-flex items-center gap-2 text-[#1a73e8] hover:bg-zinc-50 border border-zinc-200 font-semibold px-4 py-2.5 rounded-full text-sm transition-colors cursor-pointer shadow-sm focus:outline-none"
@@ -2024,69 +2024,131 @@ export default function Home() {
 
       {/* STICKY BOTTOM ACTIONS BAR */}
       {selectedContacts.size > 0 && activeTab === 'contacts' && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white border border-zinc-200 text-zinc-900 py-4 px-8 rounded-full shadow-2xl flex items-center gap-8 z-40 animate-slideUp">
-          <div className="text-xs font-bold shrink-0 text-zinc-800">
-            Seleccionados: <span className="text-purple-600 font-extrabold text-sm">{selectedContacts.size}</span> contactos
-          </div>
-          
-          <div className="w-px h-6 bg-zinc-250"></div>
-          
-          <div className="flex items-center gap-3">
-            {/* Button + Cliente - Hidden if ALL selected contacts are already clients */}
-            {hasSelectedNonClients && (
+        <>
+          {/* Mobile Bottom Bar (Fixed to bottom screen edge on mobile phones) */}
+          <div className="sm:hidden fixed bottom-0 left-0 right-0 w-full bg-white/95 backdrop-blur-md border-t border-purple-200 p-3 shadow-2xl z-40 animate-slideUp flex flex-col gap-2">
+            <div className="flex items-center justify-between px-1 text-xs">
+              <span className="font-bold text-zinc-800">
+                Seleccionados: <span className="text-purple-600 font-extrabold text-sm">{selectedContacts.size}</span>
+              </span>
               <button
-                onClick={() => handleCreateClientSheets()}
-                disabled={isCreatingClient}
-                className="bg-purple-600 hover:bg-purple-700 text-white text-xs font-extrabold px-5 py-2.5 rounded-full transition-all cursor-pointer shadow-md shadow-purple-500/20 flex items-center gap-1.5 focus:outline-none disabled:opacity-50 animate-fadeIn"
+                onClick={() => setSelectedContacts(new Set())}
+                className="text-zinc-500 hover:text-zinc-900 text-xs font-bold transition-colors cursor-pointer"
               >
-                {isCreatingClient ? (
-                  <>
-                    <div className="w-3.5 h-3.5 rounded-full border-2 border-white/40 border-t-white animate-spin"></div>
-                    Creando...
-                  </>
-                ) : (
-                  <>
-                    <UserPlus className="w-3.5 h-3.5 text-white" />
-                    + Cliente
-                  </>
-                )}
+                Deseleccionar
               </button>
-            )}
+            </div>
 
-            {/* Button 0: Nuevo Correo */}
-            <button
-              onClick={() => openGmailComposeModal()}
-              className="bg-purple-600 hover:bg-purple-700 text-white text-xs font-extrabold px-5 py-2.5 rounded-full transition-all cursor-pointer shadow-md shadow-purple-500/20 flex items-center gap-1.5 focus:outline-none"
-            >
-              <Send className="w-3.5 h-3.5 text-white" />
-              Nuevo Correo
-            </button>
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-0.5 scrollbar-none max-w-full">
+              {hasSelectedNonClients && (
+                <button
+                  onClick={() => handleCreateClientSheets()}
+                  disabled={isCreatingClient}
+                  className="bg-purple-600 text-white text-xs font-extrabold px-4 py-2 rounded-full shadow-md shrink-0 flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                >
+                  {isCreatingClient ? (
+                    <>
+                      <div className="w-3 h-3 rounded-full border-2 border-white/40 border-t-white animate-spin"></div>
+                      <span>Creando...</span>
+                    </>
+                  ) : (
+                    <>
+                      <UserPlus className="w-3.5 h-3.5 text-white" />
+                      <span>+ Cliente</span>
+                    </>
+                  )}
+                </button>
+              )}
 
-            {/* Button 1: Resolución */}
-            <button
-              onClick={() => initializeTemplate('resolucion')}
-              className="bg-zinc-100 hover:bg-zinc-200 text-zinc-800 border border-zinc-300/80 text-xs font-bold px-5 py-2.5 rounded-full transition-all cursor-pointer shadow-sm focus:outline-none"
-            >
-              Enviar Resolución
-            </button>
-            
-            {/* Button 2: Subí acuerdo */}
-            <button
-              onClick={() => initializeTemplate('subi_acuerdo')}
-              className="bg-[#c2e7ff] hover:bg-[#a5dbf9] text-[#001d35] text-xs font-bold px-5 py-2.5 rounded-full transition-all cursor-pointer shadow-sm focus:outline-none"
-            >
-              Enviar Subí Acuerdo
-            </button>
-            
-            {/* Clear Selection */}
-            <button
-              onClick={() => setSelectedContacts(new Set())}
-              className="text-zinc-500 hover:text-zinc-900 text-xs font-semibold px-3 py-2 transition-colors cursor-pointer"
-            >
-              Deseleccionar
-            </button>
+              <button
+                onClick={() => openGmailComposeModal()}
+                className="bg-purple-600 text-white text-xs font-extrabold px-4 py-2 rounded-full shadow-md shrink-0 flex items-center gap-1 cursor-pointer"
+              >
+                <Send className="w-3.5 h-3.5 text-white" />
+                <span>Nuevo Correo</span>
+              </button>
+
+              <button
+                onClick={() => initializeTemplate('resolucion')}
+                className="bg-zinc-100 text-zinc-800 border border-zinc-300 text-xs font-bold px-4 py-2 rounded-full shrink-0 cursor-pointer"
+              >
+                Enviar Resolución
+              </button>
+
+              <button
+                onClick={() => initializeTemplate('subi_acuerdo')}
+                className="bg-[#c2e7ff] text-[#001d35] text-xs font-bold px-4 py-2 rounded-full shrink-0 cursor-pointer"
+              >
+                Enviar Subí Acuerdo
+              </button>
+            </div>
           </div>
-        </div>
+
+          {/* Desktop Floating Bottom Bar (Pill Bar centered on Desktop) */}
+          <div className="hidden sm:flex fixed bottom-6 left-1/2 -translate-x-1/2 bg-white border border-zinc-200 text-zinc-900 py-3.5 px-7 rounded-full shadow-2xl items-center gap-6 z-40 animate-slideUp">
+            <div className="text-xs font-bold shrink-0 text-zinc-800">
+              Seleccionados: <span className="text-purple-600 font-extrabold text-sm">{selectedContacts.size}</span> contactos
+            </div>
+            
+            <div className="w-px h-6 bg-zinc-250"></div>
+            
+            <div className="flex items-center gap-3">
+              {/* Button + Cliente - Hidden if ALL selected contacts are already clients */}
+              {hasSelectedNonClients && (
+                <button
+                  onClick={() => handleCreateClientSheets()}
+                  disabled={isCreatingClient}
+                  className="bg-purple-600 hover:bg-purple-700 text-white text-xs font-extrabold px-5 py-2.5 rounded-full transition-all cursor-pointer shadow-md shadow-purple-500/20 flex items-center gap-1.5 focus:outline-none disabled:opacity-50 animate-fadeIn"
+                >
+                  {isCreatingClient ? (
+                    <>
+                      <div className="w-3.5 h-3.5 rounded-full border-2 border-white/40 border-t-white animate-spin"></div>
+                      Creando...
+                    </>
+                  ) : (
+                    <>
+                      <UserPlus className="w-3.5 h-3.5 text-white" />
+                      + Cliente
+                    </>
+                  )}
+                </button>
+              )}
+
+              {/* Button 0: Nuevo Correo */}
+              <button
+                onClick={() => openGmailComposeModal()}
+                className="bg-purple-600 hover:bg-purple-700 text-white text-xs font-extrabold px-5 py-2.5 rounded-full transition-all cursor-pointer shadow-md shadow-purple-500/20 flex items-center gap-1.5 focus:outline-none"
+              >
+                <Send className="w-3.5 h-3.5 text-white" />
+                Nuevo Correo
+              </button>
+
+              {/* Button 1: Resolución */}
+              <button
+                onClick={() => initializeTemplate('resolucion')}
+                className="bg-zinc-100 hover:bg-zinc-200 text-zinc-800 border border-zinc-300/80 text-xs font-bold px-5 py-2.5 rounded-full transition-all cursor-pointer shadow-sm focus:outline-none"
+              >
+                Enviar Resolución
+              </button>
+              
+              {/* Button 2: Subí acuerdo */}
+              <button
+                onClick={() => initializeTemplate('subi_acuerdo')}
+                className="bg-[#c2e7ff] hover:bg-[#a5dbf9] text-[#001d35] text-xs font-bold px-5 py-2.5 rounded-full transition-all cursor-pointer shadow-sm focus:outline-none"
+              >
+                Enviar Subí Acuerdo
+              </button>
+              
+              {/* Clear Selection */}
+              <button
+                onClick={() => setSelectedContacts(new Set())}
+                className="text-zinc-500 hover:text-zinc-900 text-xs font-semibold px-3 py-2 transition-colors cursor-pointer"
+              >
+                Deseleccionar
+              </button>
+            </div>
+          </div>
+        </>
       )}
 
       {/* CONFIRMATION EMAIL SENDING MODAL */}
